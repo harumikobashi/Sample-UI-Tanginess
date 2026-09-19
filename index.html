@@ -76,6 +76,7 @@
             <button type="button" class="sidebar-group-toggle" id="sidebarOrdersToggle"><span class="sidebar-item-label"><svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h2l2 11h11l2-8H6M9 20h.01M18 20h.01"/></svg>Orders</span><span class="chevron">+</span></button>
             <div class="sidebar-submenu collapsed" id="sidebarOrdersSubmenu">
               <button type="button" class="sidebar-sublink" id="sidebarQueueButton">Order Queue</button>
+              <button type="button" class="sidebar-sublink" id="sidebarOrderLogsButton">Order Logs</button>
             </div>
           </div>
 
@@ -180,7 +181,7 @@
 
               <section class="dashboard-panel orders-panel">
                 <div class="panel-title-row"><h2>Recent orders</h2><button type="button" class="panel-link" id="dashboardRecentOrdersLink">View all &rarr;</button></div>
-                <div class="dashboard-empty-state"><strong>No orders yet</strong><span>New orders will appear here after checkout.</span></div>
+                <div id="dashboardRecentOrdersContainer" class="dashboard-order-list"></div>
               </section>
 
               <section class="dashboard-panel feedback-panel">
@@ -194,6 +195,11 @@
             <h2>POS Order Queue</h2>
             <p id="nextOrderText">No next order.</p>
             <div id="orderQueueContainer"></div>
+          </section>
+
+          <section id="adminOrderLogsTab" hidden>
+            <h2>Order Logs</h2>
+            <div id="orderLogsContainer"></div>
           </section>
 
           <section id="adminSalesAnalyticsTab" hidden>

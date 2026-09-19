@@ -723,6 +723,100 @@ label {
 .dashboard-empty-state strong { color: var(--tanginess-ink); font-size: 13px; }
 .dashboard-empty-state span { color: var(--tanginess-muted); font-size: 11px; }
 
+.dashboard-order-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.dashboard-order-item {
+  padding: 14px 16px;
+  border: 1px solid var(--tanginess-border);
+  border-radius: 10px;
+  background: linear-gradient(135deg, #ffffff 0%, #f7fdff 100%);
+}
+
+.dashboard-order-main,
+.dashboard-order-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dashboard-order-main strong {
+  color: var(--tanginess-ink);
+  font-size: 14px;
+}
+
+.dashboard-order-id {
+  color: var(--tanginess-blue-dark);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dashboard-order-meta {
+  margin: 8px 0 10px;
+  color: var(--tanginess-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.dashboard-order-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #dff8eb;
+  color: #137d4d;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.dashboard-order-total {
+  color: var(--tanginess-ink);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.order-queue-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 14px;
+  font-size: 13px;
+}
+
+.order-queue-table th,
+.order-queue-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--tanginess-border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.order-queue-table th {
+  color: var(--tanginess-blue-dark);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.order-status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #dff8eb;
+  color: #137d4d;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
 @media (max-width: 760px) {
   .dashboard-main-grid { grid-template-columns: 1fr; }
   .dashboard-filter { width: 100%; }
