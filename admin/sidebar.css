@@ -1,0 +1,212 @@
+/* ===== Admin Shell Layout ===== */
+.admin-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ===== Sidebar ===== */
+.sidebar {
+  width: 286px;
+  flex: 0 0 286px;
+  background: #e7f7fc;
+  color: var(--tanginess-ink);
+  border-right: 1px solid var(--tanginess-border);
+  display: flex;
+  flex-direction: column;
+  padding: 28px 18px 22px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 34px;
+  padding: 0 8px;
+}
+
+.brand-mark {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  color: #ffffff;
+  background: var(--tanginess-blue);
+  font-size: 23px;
+  font-weight: 800;
+}
+.brand-title { font-weight: 800; font-size: 18px; letter-spacing: 0.7px; }
+.brand-subtitle { font-size: 13px; color: var(--tanginess-muted); }
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  flex: 1 1 auto;
+}
+
+.sidebar-link,
+.sidebar-group-toggle,
+.sidebar-sublink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  color: var(--tanginess-ink);
+  border: 0;
+  border-radius: 8px;
+  padding: 13px 14px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: auto;
+}
+
+.sidebar-item-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sidebar-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.sidebar-link:hover,
+.sidebar-group-toggle:hover,
+.sidebar-sublink:hover {
+  background: #d7f1fa;
+}
+
+.sidebar-link.active,
+.sidebar-sublink.active {
+  background: #c4eafa;
+  color: var(--tanginess-blue-dark);
+  box-shadow: inset 4px 0 0 var(--tanginess-blue);
+}
+
+.sidebar-link.disabled {
+  opacity: 0.52;
+  cursor: not-allowed;
+}
+
+.sidebar-submenu {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-left: 24px;
+  margin: 2px 0 8px;
+}
+
+.sidebar-submenu.collapsed { display: none; }
+
+.sidebar-sublink { font-weight: 500; font-size: 14px; padding: 10px 14px; }
+
+.chevron { font-size: 11px; transition: transform 0.15s ease; }
+.sidebar-group-toggle.open .chevron { transform: rotate(180deg); }
+
+.sidebar-logout {
+  margin-top: 20px;
+  background: transparent;
+  border: 1px solid #9dd9ea;
+  color: var(--tanginess-blue-dark);
+  border-radius: 8px;
+  padding: 13px 14px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* ===== Main content area ===== */
+.admin-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: #f8fdff;
+}
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--tanginess-border);
+  min-height: 72px;
+  padding: 14px 40px;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.sidebar-toggle-btn {
+  display: none;
+  background: transparent;
+  color: var(--tanginess-ink);
+  border: 0;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 8px;
+  min-height: auto;
+}
+
+.admin-search { flex: 1 1 auto; max-width: 440px; }
+.admin-search input { width: 100%; background: var(--tanginess-sky); }
+
+.admin-header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: auto;
+}
+
+.header-status { color: var(--tanginess-muted); font-size: 14px; }
+
+.admin-profile { display: flex; align-items: center; gap: 8px; }
+.profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--tanginess-blue);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+.profile-name { font-size: 14px; font-weight: bold; color: var(--tanginess-ink); }
+.profile-role { font-size: 12px; color: var(--tanginess-muted); }
+
+.admin-page-content { max-width: 1320px; padding: 34px 42px 56px; }
+
+/* ===== Mobile: sidebar becomes off-canvas ===== */
+@media (max-width: 900px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+    z-index: 20;
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15);
+  }
+  .admin-shell.sidebar-open .sidebar {
+    transform: translateX(0);
+  }
+  .sidebar-toggle-btn { display: inline-block; }
+  .admin-search { display: none; }
+  .sidebar { width: 286px; }
+  .admin-page-content { padding: 24px 18px 40px; }
+  .admin-header { padding: 12px 18px; }
+}

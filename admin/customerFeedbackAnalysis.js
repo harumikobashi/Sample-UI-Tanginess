@@ -1,14 +1,34 @@
 // ===== CUSTOMER FEEDBACK ANALYSIS =====
 // Sample feedback data. Later this will be replaced by real feedback
 // records from your groupmate's Customer Feedback module.
-const sampleFeedback = [
-  { feedbackId: 1, rating: 5, comment: "Super sarap at fresh!", date: "2026-09-01" },
-  { feedbackId: 2, rating: 4, comment: "Masarap pero medyo mahal.", date: "2026-09-01" },
-  { feedbackId: 3, rating: 3, comment: "Okay lang, pwede na.", date: "2026-09-02" },
-  { feedbackId: 4, rating: 2, comment: "Matagal ang serbisyo.", date: "2026-09-02" },
-  { feedbackId: 5, rating: 5, comment: "Ang bilis ng order, ang sarap din!", date: "2026-09-03" },
-  { feedbackId: 6, rating: 1, comment: "Mali yung natanggap kong order.", date: "2026-09-03" },
-];
+const branchFeedback = {
+  general: [
+    { feedbackId: 1, rating: 5, comment: "Super sarap at fresh!", date: "2026-09-01", branch: "General" },
+    { feedbackId: 2, rating: 4, comment: "Masarap pero medyo mahal.", date: "2026-09-01", branch: "General" },
+    { feedbackId: 3, rating: 3, comment: "Okay lang, pwede na.", date: "2026-09-02", branch: "General" },
+    { feedbackId: 4, rating: 2, comment: "Matagal ang serbisyo.", date: "2026-09-02", branch: "General" },
+    { feedbackId: 5, rating: 5, comment: "Ang bilis ng order, ang sarap din!", date: "2026-09-03", branch: "General" },
+    { feedbackId: 6, rating: 1, comment: "Mali yung natanggap kong order.", date: "2026-09-03", branch: "General" },
+  ],
+  plaridel: [
+    { feedbackId: 11, rating: 5, comment: "Fresh at masarap ang yogurt!", date: "2026-09-01", branch: "Plaridel" },
+    { feedbackId: 12, rating: 4, comment: "Maganda ang service.", date: "2026-09-02", branch: "Plaridel" },
+    { feedbackId: 13, rating: 3, comment: "Okay naman, medyo mainit ang lugar.", date: "2026-09-03", branch: "Plaridel" },
+    { feedbackId: 14, rating: 5, comment: "Sobrang ganda ng service at lasa.", date: "2026-09-03", branch: "Plaridel" },
+  ],
+  malolos: [
+    { feedbackId: 21, rating: 4, comment: "Mabilis ang order at masarap.", date: "2026-09-01", branch: "Malolos" },
+    { feedbackId: 22, rating: 2, comment: "Medyo mahabang pila.", date: "2026-09-02", branch: "Malolos" },
+    { feedbackId: 23, rating: 5, comment: "Maganda ang ambiance at quality.", date: "2026-09-02", branch: "Malolos" },
+    { feedbackId: 24, rating: 3, comment: "Okay lang ang product.", date: "2026-09-03", branch: "Malolos" },
+  ],
+};
+
+function getSelectedBranchFeedback() {
+  const branchSelect = document.getElementById("branchFilterSelect");
+  const selectedBranch = branchSelect ? branchSelect.value : "general";
+  return branchFeedback[selectedBranch] || branchFeedback.general;
+}
 
 // STEP 1: TRAVERSAL + COUNTING/FREQUENCY ANALYSIS
 // This function goes through every feedback record once, and:
@@ -52,33 +72,87 @@ function analyzeFeedback(feedbackList) {
 // ===== RENDER FUNCTION =====
 function renderFeedbackAnalysis(stats) {
   const container = document.getElementById("feedbackAnalysisContainer");
+  const totalFeedback = stats.totalFeedback || 0;
+  const ratingEntries = [5, 4, 3, 2, 1];
+
+  const ratingRows = ratingEntries.map((rating) => {
+    const count = stats.ratingCounts[rating] || 0;
+    const width = totalFeedback ? (count / totalFeedback) * 100 : 0;
+    let sentiment = "neutral";
+
+    if (rating >= 4) sentiment = "positive";
+    if (rating <= 2) sentiment = "negative";
+
+    return `
+      <div class="rating-row" data-sentiment="${sentiment}">
+        <span class="rating-label">${rating}★</span>
+        <div class="rating-bar-track">
+          <div class="rating-bar-fill" style="width: ${width}%"></div>
+        </div>
+        <span class="rating-count">${count}</span>
+      </div>
+    `;
+  }).join("");
 
   container.innerHTML = `
-    <div>
-      <h3>Total Feedback</h3>
-      <p>${stats.totalFeedback}</p>
-    </div>
-    <div>
-      <h3>Average Rating</h3>
-      <p>${stats.averageRating.toFixed(2)} / 5</p>
-    </div>
-    <div>
-      <h3>Rating Distribution</h3>
-      <p>5 stars: ${stats.ratingCounts[5]}</p>
-      <p>4 stars: ${stats.ratingCounts[4]}</p>
-      <p>3 stars: ${stats.ratingCounts[3]}</p>
-      <p>2 stars: ${stats.ratingCounts[2]}</p>
-      <p>1 star: ${stats.ratingCounts[1]}</p>
-    </div>
-    <div>
-      <h3>Feedback Classification</h3>
-      <p>Positive (4-5): ${stats.positiveCount}</p>
-      <p>Neutral (3): ${stats.neutralCount}</p>
-      <p>Negative (1-2): ${stats.negativeCount}</p>
+    <div class="analytics-shell">
+      <div class="feedback-grid">
+        <div class="feedback-pill positive">
+          <strong>${stats.totalFeedback}</strong>
+          <span>Total Feedback</span>
+        </div>
+        <div class="feedback-pill neutral">
+          <strong>${stats.averageRating.toFixed(2)}</strong>
+          <span>Average Rating</span>
+        </div>
+        <div class="feedback-pill positive">
+          <strong>${stats.positiveCount}</strong>
+          <span>Positive</span>
+        </div>
+        <div class="feedback-pill negative">
+          <strong>${stats.negativeCount}</strong>
+          <span>Negative</span>
+        </div>
+      </div>
+
+      <div class="data-card">
+        <h3>Rating Distribution</h3>
+        <div class="rating-list">
+          ${ratingRows}
+        </div>
+      </div>
+
+      <div class="data-card">
+        <h3>Feedback Classification</h3>
+        <div class="feedback-grid">
+          <div class="feedback-pill positive">
+            <strong>${stats.positiveCount}</strong>
+            <span>Positive (4-5)</span>
+          </div>
+          <div class="feedback-pill neutral">
+            <strong>${stats.neutralCount}</strong>
+            <span>Neutral (3)</span>
+          </div>
+          <div class="feedback-pill negative">
+            <strong>${stats.negativeCount}</strong>
+            <span>Negative (1-2)</span>
+          </div>
+        </div>
+      </div>
     </div>
   `;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  renderFeedbackAnalysis(analyzeFeedback(sampleFeedback));
+  const branchSelect = document.getElementById("branchFilterSelect");
+
+  function renderBranchFeedback() {
+    renderFeedbackAnalysis(analyzeFeedback(getSelectedBranchFeedback()));
+  }
+
+  renderBranchFeedback();
+
+  if (branchSelect) {
+    branchSelect.addEventListener("change", renderBranchFeedback);
+  }
 });

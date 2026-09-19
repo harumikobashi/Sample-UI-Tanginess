@@ -6,13 +6,14 @@
   <title>Tanginess Module</title>
   <link rel="stylesheet" href="customer/style.css">
   <link rel="stylesheet" href="admin/style.css">
+  <link rel="stylesheet" href="admin/sidebar.css">
 </head>
 <body>
   <main id="customerView">
     <section>
-      <button type="button" id="switchToAdminButton">Switch Account</button>
+      <button type="button" id="switchToAdminButton">Owner Access</button>
       <h1>Tanginess Frozen Yogurt</h1>
-      <p>Customer Order Creation</p>
+      <p>Cashier Order Creation</p>
       <button type="button" id="showOrderTabButton">Create Order</button>
       <button type="button" id="showCustomerStatusTabButton">Order Status</button>
     </section>
@@ -44,7 +45,7 @@
       <section>
         <h2>Order Details</h2>
         <div id="orderContainer"><p>Checkout details will appear here.</p></div>
-        <h2>Generated QR Code</h2>
+        <h2>Cashier QR Code</h2>
         <div id="qrCodeContainer"></div>
       </section>
     </div>
@@ -56,71 +57,171 @@
   </main>
 
   <main id="adminView" hidden>
-    <section>
-      <button type="button" id="switchToCustomerButton">Switch Account</button>
-      <h1>Tanginess Admin</h1>
-      <p>Cashier QR Scanner</p>
-      <button type="button" id="showScannerTabButton">Scanner</button>
-      <button type="button" id="showQueueTabButton">Order Queue</button>
-      <button type="button" id="showSalesAnalyticsTabButton">Sales Analytics</button>
-      <button type="button" id="showProductSalesTabButton">Product Sales Analysis</button>
-      <button type="button" id="showFeedbackAnalysisTabButton">Feedback Analysis</button>
-    </section>
+    <div class="admin-shell" id="adminShell">
 
-    <div id="adminScannerTab">
-      <section>
-        <h2>Camera Scanner</h2>
-        <p id="scannerStatus">Scan or upload a customer QR code.</p>
-        <div id="reader"></div>
-        <button type="button" id="startScannerButton">Start Scanner</button>
-        <button type="button" id="stopScannerButton">Stop Scanner</button>
-      </section>
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <span class="brand-mark">T</span>
+          <div>
+            <div class="brand-title">TANGINESS</div>
+            <div class="brand-subtitle">Frozen Yogurt</div>
+          </div>
+        </div>
 
-      <section>
-        <h2>Upload QR Code</h2>
-        <input type="file" id="qrImageInput" accept="image/*">
-        <button type="button" id="scanImageButton">Scan Uploaded QR</button>
-      </section>
+        <nav class="sidebar-nav">
+          <button type="button" class="sidebar-link active" id="sidebarDashboardButton"><span class="sidebar-item-label"><svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Dashboard</span></button>
 
-      <section>
-        <h2>Scanned Order</h2>
-        <div id="orderDetailsContainer"><p>No scanned order yet.</p></div>
-        <label for="paymentMethodSelect">Payment Method</label>
-        <select id="paymentMethodSelect">
-          <option value="">Select payment</option>
-          <option value="Cash">Cash</option>
-          <option value="Cashless">Cashless</option>
-        </select>
-        <button type="button" id="confirmOrderButton">Confirm Order</button>
-      </section>
+          <div class="sidebar-group">
+            <button type="button" class="sidebar-group-toggle" id="sidebarOrdersToggle"><span class="sidebar-item-label"><svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h2l2 11h11l2-8H6M9 20h.01M18 20h.01"/></svg>Orders</span><span class="chevron">+</span></button>
+            <div class="sidebar-submenu collapsed" id="sidebarOrdersSubmenu">
+              <button type="button" class="sidebar-sublink" id="sidebarQueueButton">Order Queue</button>
+            </div>
+          </div>
+
+          <div class="sidebar-group">
+            <button type="button" class="sidebar-group-toggle" id="sidebarSalesToggle"><span class="sidebar-item-label"><svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9M10 19V5M16 19v-8M22 19H2"/></svg>Sales</span><span class="chevron">+</span></button>
+            <div class="sidebar-submenu collapsed" id="sidebarSalesSubmenu">
+              <button type="button" class="sidebar-sublink" id="sidebarSalesAnalyticsButton">Sales Analytics</button>
+              <button type="button" class="sidebar-sublink" id="sidebarProductSalesButton">Product Sales Analysis</button>
+            </div>
+          </div>
+
+          <button type="button" class="sidebar-link disabled" title="Not yet built by groupmate"><span class="sidebar-item-label"><svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9zM4 7.5 12 12l8-4.5M12 12v9"/></svg>Products</span></button>
+
+          <div class="sidebar-group">
+            <button type="button" class="sidebar-group-toggle" id="sidebarFeedbackToggle"><span class="sidebar-item-label"><svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-8 7.5 8.8 8.8 0 0 1-3-.5L4 20l1.5-4A7.3 7.3 0 0 1 4.5 12 7.5 7.5 0 0 1 12 4.5a7.5 7.5 0 0 1 8 7z"/></svg>Customer Feedback</span><span class="chevron">+</span></button>
+            <div class="sidebar-submenu collapsed" id="sidebarFeedbackSubmenu">
+              <button type="button" class="sidebar-sublink" id="sidebarFeedbackAnalysisButton">Feedback Analysis</button>
+            </div>
+          </div>
+
+          <button type="button" class="sidebar-link disabled" title="Not yet built"><span class="sidebar-item-label"><svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l3 3v15H6zM15 3v4h4M9 12h6M9 16h6"/></svg>Reports</span></button>
+          <button type="button" class="sidebar-link disabled" title="Not yet built"><span class="sidebar-item-label"><svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 20v-1.5a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4V20M9.5 10.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM17 11a3 3 0 1 0 0-6M16 14.5h1a4 4 0 0 1 4 4V20"/></svg>Users / Staff</span></button>
+          <button type="button" class="sidebar-link disabled" title="Not yet built"><span class="sidebar-item-label"><svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 1.2 2.7 2.9.3-2.2 2  .6 2.8L12 9.4 9.5 10.8l.6-2.8-2.2-2 2.9-.3zM5 13l1 2.3 2.5.3-1.9 1.7.5 2.4L5 18.5l-2.1 1.2.5-2.4-1.9-1.7 2.5-.3zM19 13l1 2.3 2.5.3-1.9 1.7.5 2.4-2.1-1.2-2.1 1.2.5-2.4-1.9-1.7 2.5-.3z"/></svg>Settings</span></button>
+        </nav>
+
+        <button type="button" class="sidebar-logout" id="switchToCustomerButton">Logout</button>
+      </aside>
+
+      <!-- MAIN CONTENT -->
+      <div class="admin-main">
+        <header class="admin-header">
+          <button type="button" class="sidebar-toggle-btn" id="sidebarToggleButton" aria-label="Open navigation">Menu</button>
+          <div class="admin-search"><input type="text" placeholder="Search is unavailable" disabled></div>
+          <div class="admin-header-right">
+            <span class="header-status">Owner workspace</span>
+            <div class="admin-profile">
+              <div class="profile-avatar">O</div>
+              <div>
+                <div class="profile-name">Owner</div>
+                <div class="profile-role">Business Owner</div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <div class="admin-page-content">
+          <div class="owner-branch-filter">
+            <label for="branchFilterSelect">Reports for:</label>
+            <select id="branchFilterSelect">
+              <option value="general">General Report</option>
+              <option value="plaridel">Plaridel Branch</option>
+              <option value="malolos">Malolos Branch</option>
+            </select>
+          </div>
+
+          <section id="adminDashboardTab">
+            <div class="dashboard-intro">
+              <div>
+                <h1>Welcome, Owner!</h1>
+                <p class="intro-copy">Here is what is happening with your business today.</p>
+              </div>
+              <button type="button" class="primary-action" id="dashboardScannerButton">Review cashier queue</button>
+            </div>
+
+            <div class="dashboard-stats" aria-label="Store summary">
+              <article class="stat-card">
+                <div class="stat-card-heading"><span class="stat-icon">$</span><span class="stat-label">Total sales</span><button type="button" class="stat-arrow" id="dashboardSalesTabButton" aria-label="Open Sales Analytics">&rarr;</button></div>
+                <strong id="dashboardTotalSales">No data yet</strong>
+                <span class="stat-note">Sales data will appear here</span>
+              </article>
+              <article class="stat-card accent-pink">
+                <div class="stat-card-heading"><span class="stat-icon">#</span><span class="stat-label">Items sold</span><button type="button" class="stat-arrow" id="dashboardProductSalesTabButton" aria-label="Open Product Sales Analysis">&rarr;</button></div>
+                <strong id="dashboardItemsSold">No data yet</strong>
+                <span class="stat-note">Product data will appear here</span>
+              </article>
+              <article class="stat-card accent-yellow">
+                <div class="stat-card-heading"><span class="stat-icon">*</span><span class="stat-label">Customer feedback</span><button type="button" class="stat-arrow" id="dashboardFeedbackTabButton" aria-label="Open Feedback Analysis">&rarr;</button></div>
+                <strong id="dashboardFeedbackScore">No data yet</strong>
+                <span class="stat-note">Feedback data will appear here</span>
+              </article>
+            </div>
+
+            <div class="dashboard-action-row">
+              <span>Common tasks</span>
+              <button type="button" class="action-link" id="dashboardQueueLink">Open order queue</button>
+              <button type="button" class="action-link" id="dashboardSalesLink">View sales</button>
+            </div>
+
+            <div class="dashboard-main-grid">
+              <section class="dashboard-panel sales-panel">
+                <div class="panel-title-row">
+                  <div><h2>Sales overview</h2></div>
+                  <div class="dashboard-filter" aria-label="Sales period"><button type="button" class="active">This week</button><button type="button">This month</button><button type="button">Custom</button></div>
+                </div>
+                <div class="chart-placeholder" id="dashboardSalesChart"><span>No sales data yet</span><small>Your sales chart will appear here when the sales module is connected.</small></div>
+              </section>
+
+              <section class="dashboard-panel product-panel">
+                <div class="panel-title-row"><h2>Product performance</h2><button type="button" class="panel-link" id="dashboardProductSalesLink">View all &rarr;</button></div>
+                <div class="dashboard-empty-row">Product sales data will appear here.</div>
+              </section>
+
+              <section class="dashboard-panel orders-panel">
+                <div class="panel-title-row"><h2>Recent orders</h2><button type="button" class="panel-link" id="dashboardRecentOrdersLink">View all &rarr;</button></div>
+                <div class="dashboard-empty-state"><strong>No orders yet</strong><span>New orders will appear here after checkout.</span></div>
+              </section>
+
+              <section class="dashboard-panel feedback-panel">
+                <div class="panel-title-row"><h2>Customer feedback</h2><button type="button" class="panel-link" id="dashboardFeedbackLink">View all &rarr;</button></div>
+                <div class="dashboard-empty-state"><strong>No feedback yet</strong><span>Customer feedback will appear here when available.</span></div>
+              </section>
+            </div>
+          </section>
+
+          <section id="adminQueueTab" hidden>
+            <h2>POS Order Queue</h2>
+            <p id="nextOrderText">No next order.</p>
+            <div id="orderQueueContainer"></div>
+          </section>
+
+          <section id="adminSalesAnalyticsTab" hidden>
+            <h2>Sales Analytics</h2>
+            <div class="filter-row">
+              <label for="salesStartDate">From</label>
+              <input type="date" id="salesStartDate">
+              <label for="salesEndDate">To</label>
+              <input type="date" id="salesEndDate">
+              <button type="button" id="applySalesFilterButton">Apply Filter</button>
+            </div>
+            <div id="salesAnalyticsContainer"></div>
+          </section>
+
+          <section id="adminProductSalesTab" hidden>
+            <h2>Product Sales Analysis</h2>
+            <div id="productSalesContainer"></div>
+          </section>
+
+          <section id="adminFeedbackAnalysisTab" hidden>
+            <h2>Customer Feedback Analysis</h2>
+            <div id="feedbackAnalysisContainer"></div>
+          </section>
+
+        </div>
+      </div>
+
     </div>
-
-    <section id="adminQueueTab" hidden>
-      <h2>POS Order Queue</h2>
-      <p id="nextOrderText">No next order.</p>
-      <div id="orderQueueContainer"></div>
-    </section>
-
-  <section id="adminSalesAnalyticsTab" hidden>
-    <h2>Sales Analytics</h2>
-    <label for="salesStartDate">From</label>
-    <input type="date" id="salesStartDate">
-    <label for="salesEndDate">To</label>
-    <input type="date" id="salesEndDate">
-    <button type="button" id="applySalesFilterButton">Apply Filter</button>
-    <div id="salesAnalyticsContainer"></div>
-  </section>
-
-  <section id="adminProductSalesTab" hidden>
-    <h2>Product Sales Analysis</h2>
-    <div id="productSalesContainer"></div>
-  </section>
-
-  <section id="adminFeedbackAnalysisTab" hidden>
-    <h2>Customer Feedback Analysis</h2>
-    <div id="feedbackAnalysisContainer"></div>
-  </section>
-
   </main>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
