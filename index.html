@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="customer/style.css">
   <link rel="stylesheet" href="admin/style.css">
   <link rel="stylesheet" href="admin/sidebar.css">
+  <!-- ORDER LOGS MODULE: own stylesheet, loaded last so it can reuse the dashboard's variables -->
+  <link rel="stylesheet" href="admin/orderlogs/orderLogs.css">
 </head>
 <body>
   <main id="customerView">
@@ -199,6 +201,7 @@
 
           <section id="adminOrderLogsTab" hidden>
             <h2>Order Logs</h2>
+            <!-- The three Order Logs modules mount their interface inside this existing container. -->
             <div id="orderLogsContainer"></div>
           </section>
 
@@ -235,6 +238,15 @@
   <script src="admin/salesAnalytics.js"></script>
   <script src="admin/productSalesAnalysis.js"></script>
   <script src="admin/customerFeedbackAnalysis.js"></script>
+
+  <!-- ===== ORDER LOGS MODULE (3 modules + view layer) =====
+       Load order matters: Module 1 defines the storage that Modules 2 and 3
+       operate on, and the view layer wires all three to the dashboard UI. -->
+  <script src="admin/orderlogs/transactionRecording.js"></script>
+  <script src="admin/orderlogs/sortingModule.js"></script>
+  <script src="admin/orderlogs/searchingModule.js"></script>
+  <script src="admin/orderlogs/orderLogsView.js"></script>
+
   <script type="module" src="script.js"></script>
 </body>
 </html>
