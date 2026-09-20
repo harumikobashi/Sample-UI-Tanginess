@@ -69,18 +69,11 @@ const ORDER_LOGS_INTERFACE_HTML = `
           <tbody id="orderLogsTableBody"></tbody>
         </table>
       </div>
-      <div class="olg-pagination">
-        <button type="button" class="olg-btn olg-btn-ghost" id="orderLogsPrevPageButton">&larr; Prev</button>
-        <span class="olg-page-indicator" id="orderLogsPageIndicator"></span>
-        <button type="button" class="olg-btn olg-btn-ghost" id="orderLogsNextPageButton">Next &rarr;</button>
-      </div>
       <p class="olg-status" id="orderLogsStatusText"></p>
       <p class="olg-note">
         Storage is a <code>Linked List</code> fed by a <code>Linked Queue</code> from the POS.
-        The "Reports for" dropdown above filters by branch first (General converges both
-        branches), then every search/sort builds a fresh <code>Array</code> view and runs a manual
-        Linear Search and Merge Sort on it — the stored records are never reordered — and only
-        10 records at a time are sliced out for display.
+        Every search/sort builds a fresh <code>Array</code> view and runs a manual Linear Search and
+        Merge Sort on it, so the stored records are never reordered.
       </p>
     </div>
 
@@ -119,105 +112,40 @@ function showOrderLogsStatus(messageText, statusType) {
 }
 
 
-/* ---- Pagination state: show 10 orders per page instead of retrieving/rendering all at once ---- */
-const RECORDS_PER_PAGE = 10;
-let currentPageNumber = 1;
-
-// Reads the dashboard's own "Reports for" dropdown (general | plaridel | malolos).
-function getSelectedBranchFilterValue() {
-  const branchFilterSelect = document.getElementById("branchFilterSelect");
-  return branchFilterSelect ? branchFilterSelect.value : "general";
-}
-
-/* ---- The main pipeline: Linked List -> Array view -> branch filter -> Module 3 -> Module 2 ---- */
-function getFilteredAndSortedOrders() {
-  const fullOrderArrayView = orderTransactionLog.buildArrayViewFromLog();
-
-  // Branch filter first: "general" converges both branches; "plaridel"/"malolos" narrow to one.
-  const branchFilterValue = getSelectedBranchFilterValue();
-  const branchFilteredArray = filterOrdersByBranch(fullOrderArrayView, branchFilterValue);
-
-  const searchQueryText = document.getElementById("orderLogsSearchInput").value;
-  const searchedOrderArray = searchOrderArrayByKeyword(branchFilteredArray, searchQueryText);
-
-  const sortFieldName = document.getElementById("orderLogsSortFieldSelect").value;
-  const sortDirection = document.getElementById("orderLogsSortDirectionSelect").value;
-  return sortOrderArrayByField(searchedOrderArray, sortFieldName, sortDirection);
-}
-
-// Called whenever the branch, search text, or sort settings change — always jumps back to page 1.
+/* ---- The main pipeline: Linked List -> Array view -> Module 3 -> Module 2 -> table ---- */
 function refreshOrderLogDisplay() {
   const tableBodyElement = document.getElementById("orderLogsTableBody");
   if (!tableBodyElement) {
     return; // interface not mounted yet (owner has not opened the Order Logs tab)
   }
-  currentPageNumber = 1;
-  renderCurrentPage();
+
+  const fullOrderArrayView = orderTransactionLog.buildArrayViewFromLog();
+
+  const searchQueryText = document.getElementById("orderLogsSearchInput").value;
+  const searchedOrderArray = searchOrderArrayByKeyword(fullOrderArrayView, searchQueryText);
+
+  const sortFieldName = document.getElementById("orderLogsSortFieldSelect").value;
+  const sortDirection = document.getElementById("orderLogsSortDirectionSelect").value;
+  const finalDisplayArray = sortOrderArrayByField(searchedOrderArray, sortFieldName, sortDirection);
+
+  renderOrderLogsTable(finalDisplayArray, fullOrderArrayView.length);
 }
 
-// Called by the Prev/Next buttons — moves the page pointer without resetting filters/sort.
-function changeOrderLogsPage(pageDelta) {
-  const filteredSortedOrders = getFilteredAndSortedOrders();
-  const totalPageCount = Math.max(1, Math.ceil(filteredSortedOrders.length / RECORDS_PER_PAGE));
-  const requestedPageNumber = currentPageNumber + pageDelta;
-  if (requestedPageNumber >= 1 && requestedPageNumber <= totalPageCount) {
-    currentPageNumber = requestedPageNumber;
-  }
-  renderCurrentPage();
-}
-
-// Slices out only the current page's records (max RECORDS_PER_PAGE) and renders that slice.
-function renderCurrentPage() {
-  const filteredSortedOrders = getFilteredAndSortedOrders();
-  const totalMatchingOrders = filteredSortedOrders.length;
-  const totalPageCount = Math.max(1, Math.ceil(totalMatchingOrders / RECORDS_PER_PAGE));
-
-  if (currentPageNumber > totalPageCount) {
-    currentPageNumber = totalPageCount;
-  }
-
-  const pageStartIndex = (currentPageNumber - 1) * RECORDS_PER_PAGE;
-  const pageEndIndex = pageStartIndex + RECORDS_PER_PAGE;
-  const currentPageOrders = filteredSortedOrders.slice(pageStartIndex, pageEndIndex);
-
-  renderOrderLogsTable(currentPageOrders, totalMatchingOrders, pageStartIndex);
-  updatePaginationControls(totalMatchingOrders, totalPageCount);
-}
-
-function updatePaginationControls(totalMatchingOrders, totalPageCount) {
-  const pageIndicatorElement = document.getElementById("orderLogsPageIndicator");
-  const prevPageButton = document.getElementById("orderLogsPrevPageButton");
-  const nextPageButton = document.getElementById("orderLogsNextPageButton");
-  if (!pageIndicatorElement) {
-    return;
-  }
-  pageIndicatorElement.textContent = totalMatchingOrders === 0
-    ? "Page 0 of 0"
-    : `Page ${currentPageNumber} of ${totalPageCount}`;
-  prevPageButton.disabled = currentPageNumber <= 1;
-  nextPageButton.disabled = currentPageNumber >= totalPageCount;
-}
-
-// numberingOffset = how many matching orders came before this page (for correct "No." numbering).
-function renderOrderLogsTable(orderArrayToDisplay, totalMatchingOrders, numberingOffset) {
+function renderOrderLogsTable(orderArrayToDisplay, totalOrdersInLog) {
   const tableBodyElement = document.getElementById("orderLogsTableBody");
   const resultCountElement = document.getElementById("orderLogsResultCount");
 
   tableBodyElement.innerHTML = "";
+  resultCountElement.textContent =
+    `${orderArrayToDisplay.length} of ${totalOrdersInLog} order${totalOrdersInLog === 1 ? "" : "s"} shown`;
 
-  if (totalMatchingOrders === 0) {
-    resultCountElement.textContent = "0 orders shown";
+  if (orderArrayToDisplay.length === 0) {
     tableBodyElement.innerHTML = `<tr class="olg-empty-row"><td colspan="8">No matching orders found.</td></tr>`;
     return;
   }
 
-  const rangeStartNumber = numberingOffset + 1;
-  const rangeEndNumber = numberingOffset + orderArrayToDisplay.length;
-  resultCountElement.textContent = `Showing ${rangeStartNumber}-${rangeEndNumber} of ${totalMatchingOrders} orders`;
-
   orderArrayToDisplay.forEach(function (orderRecord, orderDisplayIndex) {
     const numberOfLineItems = orderRecord.items.length;
-    const orderRowNumber = numberingOffset + orderDisplayIndex + 1;
 
     orderRecord.items.forEach(function (lineItem, lineItemIndex) {
       const tableRowElement = document.createElement("tr");
@@ -225,7 +153,7 @@ function renderOrderLogsTable(orderArrayToDisplay, totalMatchingOrders, numberin
 
       // Order-level columns render once and span all of that order's line item rows
       if (lineItemIndex === 0) {
-        rowHtml += `<td class="olg-anchor" rowspan="${numberOfLineItems}">${orderRowNumber}</td>`;
+        rowHtml += `<td class="olg-anchor" rowspan="${numberOfLineItems}">${orderDisplayIndex + 1}</td>`;
         rowHtml += `<td class="olg-anchor" rowspan="${numberOfLineItems}"><span class="olg-pill">${orderRecord.orderId}</span></td>`;
       }
 
@@ -249,15 +177,15 @@ function renderOrderLogsTable(orderArrayToDisplay, totalMatchingOrders, numberin
 
 /* ---- Sample transactions, as if they already arrived from the POS queue ---- */
 const seedOrderPayloads = [
-  { orderId: "ORD-1001", branch: "Malolos", paymentMethod: "Cashless", orderDate: "2026-09-13",
+  { orderId: "ORD-1001", paymentMethod: "Cashless", orderDate: "2026-09-13",
     lineItems: [{ cupSize: "Mini", itemQuantity: 1,
       selectedToppings: [{ toppingName: "Strawberry", toppingQuantity: 1 }, { toppingName: "Oreo", toppingQuantity: 1 }],
       lineItemTotal: 53 }] },
-  { orderId: "ORD-1002", branch: "Plaridel", paymentMethod: "Cash", orderDate: "2026-09-10",
+  { orderId: "ORD-1002", paymentMethod: "Cash", orderDate: "2026-09-10",
     lineItems: [{ cupSize: "Grande", itemQuantity: 1,
       selectedToppings: [{ toppingName: "Mango", toppingQuantity: 2 }, { toppingName: "Strawberry", toppingQuantity: 1 }],
       lineItemTotal: 248 }] },
-  { orderId: "ORD-1003", branch: "Plaridel", paymentMethod: "Gcash", orderDate: "2026-09-12",
+  { orderId: "ORD-1003", paymentMethod: "Gcash", orderDate: "2026-09-12",
     lineItems: [
       { cupSize: "Tall", itemQuantity: 1,
         selectedToppings: [{ toppingName: "Dragonfruit", toppingQuantity: 1 }, { toppingName: "Kiwi", toppingQuantity: 1 }, { toppingName: "Granola", toppingQuantity: 1 }, { toppingName: "Peanuts", toppingQuantity: 1 }, { toppingName: "Caramel", toppingQuantity: 1 }],
@@ -266,11 +194,11 @@ const seedOrderPayloads = [
         selectedToppings: [{ toppingName: "Oreo", toppingQuantity: 2 }],
         lineItemTotal: 76 },
     ] },
-  { orderId: "ORD-1004", branch: "Malolos", paymentMethod: "Cash", orderDate: "2026-09-12",
+  { orderId: "ORD-1004", paymentMethod: "Cash", orderDate: "2026-09-12",
     lineItems: [{ cupSize: "Demi", itemQuantity: 1,
       selectedToppings: [{ toppingName: "Strawberry", toppingQuantity: 1 }, { toppingName: "Granola", toppingQuantity: 1 }],
       lineItemTotal: 98 }] },
-  { orderId: "ORD-1005", branch: "Plaridel", paymentMethod: "Cash", orderDate: "2026-07-08",
+  { orderId: "ORD-1005", paymentMethod: "Cash", orderDate: "2026-07-08",
     lineItems: [
       { cupSize: "Triple", itemQuantity: 1,
         selectedToppings: [{ toppingName: "Choco Syrup", toppingQuantity: 2 }, { toppingName: "Flakes", toppingQuantity: 1 }],
@@ -279,42 +207,18 @@ const seedOrderPayloads = [
         selectedToppings: [{ toppingName: "Choco Syrup", toppingQuantity: 2 }],
         lineItemTotal: 48 },
     ] },
-  { orderId: "ORD-1006", branch: "Malolos", paymentMethod: "Cash", orderDate: "2026-07-08",
+  { orderId: "ORD-1006", paymentMethod: "Cash", orderDate: "2026-07-08",
     lineItems: [{ cupSize: "Demi", itemQuantity: 1,
       selectedToppings: [{ toppingName: "Choco Syrup", toppingQuantity: 1 }, { toppingName: "Flakes", toppingQuantity: 1 }],
       lineItemTotal: 38 }] },
-  { orderId: "ORD-1007", branch: "Plaridel", paymentMethod: "Cash", orderDate: "2026-07-08",
+  { orderId: "ORD-1007", paymentMethod: "Cash", orderDate: "2026-07-08",
     lineItems: [{ cupSize: "Demi", itemQuantity: 2,
       selectedToppings: [{ toppingName: "Choco Syrup", toppingQuantity: 1 }, { toppingName: "Flakes", toppingQuantity: 1 }],
       lineItemTotal: 38 }] },
-  { orderId: "ORD-1008", branch: "Malolos", paymentMethod: "Cashless", orderDate: "2026-09-13",
+  { orderId: "ORD-1008", paymentMethod: "Cashless", orderDate: "2026-09-13",
     lineItems: [{ cupSize: "Grande", itemQuantity: 1,
       selectedToppings: [{ toppingName: "Biscoff Sauce", toppingQuantity: 1 }, { toppingName: "Cornflakes", toppingQuantity: 1 }, { toppingName: "Kiwi", toppingQuantity: 1 }, { toppingName: "Mango", toppingQuantity: 1 }, { toppingName: "Oreo", toppingQuantity: 1 }, { toppingName: "Strawberry", toppingQuantity: 1 }],
       lineItemTotal: 198 }] },
-  { orderId: "ORD-1009", branch: "Malolos", paymentMethod: "Cashless", orderDate: "2026-10-20",
-    lineItems: [{ cupSize: "short", itemQuantity: 1,
-      selectedToppings: [{ toppingName: "Strawberry", toppingQuantity: 1 }, { toppingName: "Oreo", toppingQuantity: 1 }],
-      lineItemTotal: 53 }] },
-  { orderId: "ORD-1010", branch: "Plaridel", paymentMethod: "Cash", orderDate: "2026-10-20",
-    lineItems: [{ cupSize: "Mini", itemQuantity: 1,
-      selectedToppings: [{ toppingName: "Strawberry", toppingQuantity: 1 }, { toppingName: "Oreo", toppingQuantity: 1 }],
-      lineItemTotal: 53 }] },
-  { orderId: "ORD-1011", branch: "Malolos", paymentMethod: "Cash", orderDate: "2026-10-21",
-    lineItems: [{ cupSize: "Mini", itemQuantity: 1,
-      selectedToppings: [{ toppingName: "Strawberry", toppingQuantity: 1 }, { toppingName: "Oreo", toppingQuantity: 1 }],
-      lineItemTotal: 53 }] },
-  { orderId: "ORD-1012", branch: "Plaridel", paymentMethod: "Cashless", orderDate: "2026-10-21",
-    lineItems: [{ cupSize: "Mini", itemQuantity: 1,
-      selectedToppings: [{ toppingName: "Strawberry", toppingQuantity: 1 }, { toppingName: "Oreo", toppingQuantity: 1 }],
-      lineItemTotal: 53 }] },
-  { orderId: "ORD-1013", branch: "Plaridel", paymentMethod: "Cashless", orderDate: "2026-10-21",
-    lineItems: [{ cupSize: "Mini", itemQuantity: 1,
-      selectedToppings: [{ toppingName: "Strawberry", toppingQuantity: 1 }, { toppingName: "Oreo", toppingQuantity: 1 }],
-      lineItemTotal: 53 }] },
-  { orderId: "ORD-1014", branch: "Malolos", paymentMethod: "Cash", orderDate: "2026-10-30",
-    lineItems: [{ cupSize: "Mini", itemQuantity: 1,
-      selectedToppings: [{ toppingName: "Strawberry", toppingQuantity: 1 }, { toppingName: "Oreo", toppingQuantity: 1 }],
-      lineItemTotal: 53 }] },
 ];
 
 let hasSeededSampleOrders = false;
@@ -358,12 +262,6 @@ function mountOrderLogsInterface() {
     document.getElementById("orderLogsSortFieldSelect").value = "orderDate";
     document.getElementById("orderLogsSortDirectionSelect").value = "ascending";
     refreshOrderLogDisplay();
-  });
-  document.getElementById("orderLogsPrevPageButton").addEventListener("click", function () {
-    changeOrderLogsPage(-1);
-  });
-  document.getElementById("orderLogsNextPageButton").addEventListener("click", function () {
-    changeOrderLogsPage(1);
   });
 
   seedSampleOrdersOnce();

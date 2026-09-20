@@ -149,7 +149,6 @@ const CUP_SIZE_RULES = {
 };
 
 const VALID_PAYMENT_METHODS = ["Cash", "Gcash", "Cashless"];
-const VALID_BRANCH_NAMES = ["Plaridel", "Malolos"];
 
 
 /* ---- Manual validation helpers (no regex, no built-in shortcuts) ---- */
@@ -198,16 +197,6 @@ function validateIncomingOrderPayload(rawOrderPayload) {
   }
   if (isPaymentMethodValid === false) {
     return { isValid: false, errorMessage: "paymentMethod must be Cash, Gcash, or Cashless." };
-  }
-
-  let isBranchNameValid = false;
-  for (let branchIndex = 0; branchIndex < VALID_BRANCH_NAMES.length; branchIndex = branchIndex + 1) {
-    if (VALID_BRANCH_NAMES[branchIndex] === rawOrderPayload.branch) {
-      isBranchNameValid = true;
-    }
-  }
-  if (isBranchNameValid === false) {
-    return { isValid: false, errorMessage: "branch must be Plaridel or Malolos." };
   }
 
   if (isValidOrderDateFormat(rawOrderPayload.orderDate) === false) {
@@ -293,7 +282,6 @@ function receiveCompletedOrderFromPOS(rawOrderPayload) {
   // Reshape the POS payload into this module's internal order-record shape
   const newOrderRecord = {
     orderId: orderPayloadWithId.orderId,
-    branch: orderPayloadWithId.branch,
     payment: orderPayloadWithId.paymentMethod,
     orderDate: orderPayloadWithId.orderDate,
     items: orderPayloadWithId.lineItems.map(function (lineItem) {
