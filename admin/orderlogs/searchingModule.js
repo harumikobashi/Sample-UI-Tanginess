@@ -142,3 +142,34 @@ function filterOrderArrayByCriteria(orderArrayToFilter, filterCriteria) {
   }
   return filteredOrders;
 }
+
+
+/**
+ * Maps the "Reports for" dropdown's option values to the branch names stored on each order.
+ * "general" is intentionally absent — the General Report converges both branches, so no
+ * branch filtering is applied for it (see filterOrdersByBranch below).
+ */
+const BRANCH_FILTER_VALUE_TO_NAME = {
+  plaridel: "Plaridel",
+  malolos: "Malolos",
+};
+
+/**
+ * PUBLIC branch-filter entry point used by the "Reports for" dropdown.
+ *   - "general" (or anything unrecognized) returns every order unchanged, converging both branches.
+ *   - "plaridel" / "malolos" return only that branch's orders.
+ * Manual loop, consistent with the other filter/search functions in this module.
+ */
+function filterOrdersByBranch(orderArrayToFilter, branchFilterValue) {
+  const targetBranchName = BRANCH_FILTER_VALUE_TO_NAME[branchFilterValue];
+  if (targetBranchName === undefined) {
+    return orderArrayToFilter; // "general" (or no selection yet) -> converge both branches
+  }
+  const branchFilteredOrders = [];
+  for (let orderIndex = 0; orderIndex < orderArrayToFilter.length; orderIndex = orderIndex + 1) {
+    if (orderArrayToFilter[orderIndex].branch === targetBranchName) {
+      branchFilteredOrders.push(orderArrayToFilter[orderIndex]);
+    }
+  }
+  return branchFilteredOrders;
+}

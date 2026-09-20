@@ -188,6 +188,28 @@
   text-align: center;
 }
 
+/* ---- Pagination ---- */
+.olg-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.olg-page-indicator {
+  color: var(--tanginess-muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.olg-pagination .olg-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 /* ---- Status line + footnote ---- */
 .olg-status {
   min-height: 18px;
