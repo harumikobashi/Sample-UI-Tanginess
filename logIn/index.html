@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tanginess – Login</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+
+    <div class="top-brand-border">
+      <a href="../index.html" class="top-bar-brand" title="Back to Home">
+        <img src="assets/icon_t.png" alt="Tanginess" class="top-bar-icon" />
+      </a>
+    </div>
+
+    <section id="loginSection">
+
+      <div class="logo-wrapper">
+        <img src="assets/logo.png" alt="Tanginess Frozen Yogurt" class="brand-logo" />
+      </div>
+
+      <div id="errorBanner"></div>
+      <div id="successBanner"></div>
+
+      <form id="loginForm" novalidate>
+
+        <div class="form-group">
+          <label for="username">Email / Username</label>
+          <input 
+            type="text" 
+            id="username" 
+            name="username" 
+            placeholder="Enter your email or username" 
+            autocomplete="username"
+          />
+          <span class="error-msg" id="usernameError">Email or username is required.</span>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            placeholder="Enter your password" 
+            autocomplete="current-password"
+          />
+          <span class="error-msg" id="passwordError">Password is required.</span>
+        </div>
+
+        <button type="submit" id="loginButton">Log In</button>
+
+      </form>
+
+      <div class="form-footer">
+        <a href="../forgotPass/index.html" id="forgotPasswordLink">Forgot Password?</a>
+        <span class="signup-link">New customer? <a href="../signUp/index.html">Sign Up</a></span>
+        <a href="../index.html" style="color: #64748b; text-decoration: none; width: 100%; text-align: center; margin-top: 6px;">Home</a>
+      </div>
+
+
+
+    </section>
+
+    <script src="../assets/auth.js"></script>
+    <script src="script.js"></script>
+
+  </body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tanginess – Forgot Password</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+
+    <div class="top-brand-border">
+      <a href="../index.html" class="top-bar-brand" title="Back to Home">
+        <img src="assets/icon_t.png" alt="Tanginess" class="top-bar-icon" />
+      </a>
+    </div>
+
+    <section id="forgotPasswordSection">
+
+      <div class="logo-wrapper">
+        <img src="assets/logo.png" alt="Tanginess Frozen Yogurt" class="brand-logo" />
+      </div>
+
+      <div id="errorBanner"></div>
+      <div id="successBanner"></div>
+      <div id="otpSuccessBanner"></div>
+      <div id="resetSuccessBanner"></div>
+
+      <!-- Step 1: Request Reset Code -->
+      <div id="stepRequestOtp">
+        <p style="text-align: center; font-size: 14px; color: #52637a; margin-bottom: 20px;">
+          Enter your registered email address and we'll provide instructions to reset your password.
+        </p>
+
+        <form id="forgotPasswordForm" novalidate>
+          <div class="form-group">
+            <label for="resetEmail">Email Address</label>
+            <input 
+              type="email" 
+              id="resetEmail" 
+              name="resetEmail" 
+              placeholder="Enter your account email" 
+              autocomplete="email"
+              required
+            />
+            <span class="error-msg" id="resetEmailError">Please enter a valid email address.</span>
+          </div>
+
+          <button type="submit" id="sendOtpButton">Send Reset Instructions</button>
+        </form>
+      </div>
+
+      <!-- Step 2: Enter OTP & New Password -->
+      <div id="stepResetPassword" style="display: none;">
+        <p style="text-align: center; font-size: 14px; color: #52637a; margin-bottom: 20px;">
+          Enter the verification code and your new password.
+        </p>
+
+        <form id="resetPasswordForm" novalidate>
+          <div class="form-group">
+            <label for="otpCode">6-Digit Verification Code</label>
+            <input 
+              type="text" 
+              id="otpCode" 
+              name="otpCode" 
+              placeholder="e.g. 123456" 
+              maxlength="6"
+              autocomplete="one-time-code"
+              required
+            />
+            <span class="error-msg" id="otpCodeError">Please enter the 6-digit code.</span>
+          </div>
+
+          <div class="form-group">
+            <label for="newPassword">New Password</label>
+            <input 
+              type="password" 
+              id="newPassword" 
+              name="newPassword" 
+              placeholder="At least 8 characters" 
+              autocomplete="new-password"
+              required
+            />
+            <span class="error-msg" id="newPasswordError">Password must be at least 8 characters.</span>
+          </div>
+
+          <div class="form-group">
+            <label for="confirmNewPassword">Confirm New Password</label>
+            <input 
+              type="password" 
+              id="confirmNewPassword" 
+              name="confirmNewPassword" 
+              placeholder="Re-enter new password" 
+              autocomplete="new-password"
+              required
+            />
+            <span class="error-msg" id="confirmNewPasswordError">Passwords do not match.</span>
+          </div>
+
+          <button type="submit" id="resetPasswordButton">Reset Password</button>
+
+          <div style="text-align: center; margin-top: 10px;">
+            <button type="button" id="resendCodeButton" style="background: none; border: none; color: #049fd3; font-size: 12.5px; cursor: pointer; text-decoration: underline; padding: 4px; box-shadow: none;">
+              Resend verification code
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="form-footer">
+        <a href="../logIn/index.html" id="backToLoginLink">Remember password? Log In</a>
+        <a href="../index.html" style="color: #64748b; text-decoration: none;">Home</a>
+      </div>
+
+    </section>
+
+    <script src="../assets/auth.js"></script>
+    <script src="script.js"></script>
+
+  </body>
+</html>

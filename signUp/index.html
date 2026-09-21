@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tanginess – Sign Up</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+
+    <div class="top-brand-border">
+      <a href="../index.html" class="top-bar-brand" title="Back to Home">
+        <img src="assets/icon_t.png" alt="Tanginess" class="top-bar-icon" />
+      </a>
+    </div>
+
+    <section id="signUpSection">
+
+      <div class="logo-wrapper">
+        <img src="assets/logo.png" alt="Tanginess Frozen Yogurt" class="brand-logo" />
+      </div>
+
+      <div id="errorBanner"></div>
+      <div id="successBanner"></div>
+
+      <form id="signUpForm" novalidate>
+
+
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="firstName">First Name</label>
+            <input 
+              type="text" 
+              id="firstName" 
+              name="firstName" 
+              placeholder="First name" 
+              autocomplete="given-name"
+              required
+            />
+            <span class="error-msg" id="firstNameError">First name is required.</span>
+          </div>
+
+          <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <input 
+              type="text" 
+              id="lastName" 
+              name="lastName" 
+              placeholder="Last name" 
+              autocomplete="family-name"
+              required
+            />
+            <span class="error-msg" id="lastNameError">Last name is required.</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input 
+            type="email" 
+            id="email" 
+            name="email" 
+            placeholder="Enter your email" 
+            autocomplete="email"
+            required
+          />
+          <span class="error-msg" id="emailError">Valid email is required.</span>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Create Password</label>
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            placeholder="At least 8 characters" 
+            autocomplete="new-password"
+            required
+          />
+          <span class="error-msg" id="passwordError">Password must be at least 8 characters.</span>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <input 
+            type="password" 
+            id="confirmPassword" 
+            name="confirmPassword" 
+            placeholder="Re-enter your password" 
+            autocomplete="new-password"
+            required
+          />
+          <span class="error-msg" id="confirmPasswordError">Passwords do not match.</span>
+        </div>
+
+        <button type="submit" id="signUpButton">Create Account</button>
+
+      </form>
+
+      <div class="form-footer">
+        <span class="signup-link">Already have an account? <a href="../logIn/index.html">Log In</a></span>
+        <a href="../index.html" style="color: #64748b; text-decoration: none;">Home</a>
+      </div>
+
+    </section>
+
+    <script src="../assets/auth.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
